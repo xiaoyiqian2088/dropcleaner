@@ -32,15 +32,19 @@ public record CleanBatch(long id, long createdAt, String dimension, BlockPos cen
      *
      * <p>只有物品本身<b>以及所有数据组件</b>都相同才合并，所以不同的附魔、不同的耐久
      * 永远不会被并到一起。</p>
+     *
+     * <p>合并上限还要受物品自身堆叠上限约束：剑是 1、鸡蛋是 16。否则会造出
+     * 「64 个剑」这种原版根本不存在的栈，显示和后续处理都会出问题。</p>
      */
     public static List<ItemStack> merge(List<ItemStack> input, int cap) {
         List<ItemStack> merged = new ArrayList<>();
-        int limit = Math.max(1, cap);
+        int configured = Math.max(1, cap);
 
         for (ItemStack stack : input) {
             if (stack.isEmpty()) {
                 continue;
             }
+            int limit = Math.min(configured, Math.max(1, stack.getMaxCount()));
             int remaining = stack.getCount();
 
             for (ItemStack existing : merged) {

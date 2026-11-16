@@ -311,7 +311,14 @@ public class DropCleanerData extends PersistentState {
                         continue;
                     }
                     ItemStack stack = parsed.get();
-                    stack.setCount(Math.max(1, stored.getInt("amount")));
+                    int amount = Math.max(1, stored.getInt("amount"));
+                    // 旧版本可能存过超过物品自身上限的堆（比如 64 把剑），读出来时拆成合法的小堆
+                    int max = Math.max(1, stack.getMaxCount());
+                    while (amount > max) {
+                        items.add(stack.copyWithCount(max));
+                        amount -= max;
+                    }
+                    stack.setCount(amount);
                     items.add(stack);
                 } else {
                     Optional<ItemStack> parsed = ItemStack.fromNbt(registries, stored);
