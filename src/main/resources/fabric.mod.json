@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "dropcleaner",
+  "version": "${version}",
+  "name": "Drop Cleaner",
+  "icon": "assets/dropcleaner/icon.png",
+  "description": "按区块清理掉落物，被清理的物品可从缓存取回。纯服务端，客户端无需安装。",
+  "authors": [
+    "阿拾",
+    "霄忆阡"
+  ],
+  "license": "MIT",
+  "environment": "server",
+  "entrypoints": {
+    "main": [
+      "com.dropcleaner.DropCleanerMod"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "fabric-api": "*",
+    "minecraft": "1.21.1"
+  }
+}
