@@ -111,6 +111,22 @@ public class DropCleanerData extends PersistentState {
         return nextId;
     }
 
+    /**
+     * 删除早于给定时间的批次（缓存过期）。
+     *
+     * @param cutoffMillis 早于这个时间点创建的批次会被删掉
+     * @return 删掉的批次数
+     */
+    public int expireBefore(long cutoffMillis) {
+        int before = batches.size();
+        batches.removeIf(batch -> batch.createdAt() < cutoffMillis);
+        int removed = before - batches.size();
+        if (removed > 0) {
+            markDirty();
+        }
+        return removed;
+    }
+
     /** 同时执行「最多多少批次」和「最多多少堆」，都是先丢最旧的。 */
     public void trim() {
         int maxBatches = DropCleanerConfig.cacheMaxBatches();

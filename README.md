@@ -111,6 +111,8 @@ item whitelist  >  protected zone  >  clear radius  >  threshold
 | `mergeMaxStackSize` | 64 | Merge cap for identical items |
 | `cacheMaxBatches` | 50 | Keep at most this many batches |
 | `cacheMaxItems` | 3200 | Keep at most this many stacks in total (0 = unlimited) |
+| `cacheExpireEnabled` | false | Delete old batches by age (the field below is only read when this is on) |
+| `cacheExpireSeconds` | 604800 | Batch age limit in seconds; 0 = never expire |
 | `protectNotifyEnabled` | true | Tell operators when a protected zone piles up |
 | `protectNotifyText` | ... | Message template, `%s` = zone name, count |
 | `protectNotifyCooldownSeconds` | 600 | Minimum gap between two notices per zone |
@@ -235,6 +237,8 @@ MIT. See [LICENSE](LICENSE).
 | `mergeMaxStackSize` | 64 | 相同物品合并上限 |
 | `cacheMaxBatches` | 50 | 最多保留批次 |
 | `cacheMaxItems` | 3200 | 最多保留堆数（0 = 不限） |
+| `cacheExpireEnabled` | false | 是否按时间清理旧批次（关掉时下面那项不生效） |
+| `cacheExpireSeconds` | 604800 | 批次保留秒数；0 = 永不过期（默认 7 天） |
 | `protectNotifyEnabled` | true | 保护区堆积时通知管理员 |
 | `protectNotifyText` | ... | 通知文案，`%s` = 保护区名、数量 |
 | `protectNotifyCooldownSeconds` | 600 | 同一保护区两次通知的最小间隔 |

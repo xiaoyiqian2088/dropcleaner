@@ -32,6 +32,8 @@ public final class DropCleanerConfig {
     private static int mergeMaxStackSize = 64;
     private static int cacheMaxBatches = 50;
     private static int cacheMaxItems = 3200;
+    private static boolean cacheExpireEnabled = false;
+    private static int cacheExpireSeconds = 604800;
     private static boolean protectNotifyEnabled = true;
     private static String protectNotifyText = "保护区「%s」堆积了 %s 堆掉落物，请管理员过来清理";
     private static int protectNotifyCooldownSeconds = 600;
@@ -69,6 +71,8 @@ public final class DropCleanerConfig {
         mergeMaxStackSize = intOf(values, "mergeMaxStackSize", mergeMaxStackSize, 1, 1_000_000);
         cacheMaxBatches = intOf(values, "cacheMaxBatches", cacheMaxBatches, 1, 10_000);
         cacheMaxItems = intOf(values, "cacheMaxItems", cacheMaxItems, 0, 1_000_000);
+        cacheExpireEnabled = boolOf(values, "cacheExpireEnabled", cacheExpireEnabled);
+        cacheExpireSeconds = intOf(values, "cacheExpireSeconds", cacheExpireSeconds, 0, 315_360_000);
         protectNotifyEnabled = boolOf(values, "protectNotifyEnabled", protectNotifyEnabled);
         protectNotifyText = values.getOrDefault("protectNotifyText", protectNotifyText);
         protectNotifyCooldownSeconds = intOf(values, "protectNotifyCooldownSeconds", protectNotifyCooldownSeconds, 0, 86400);
@@ -107,6 +111,16 @@ public final class DropCleanerConfig {
 
     public static int cacheMaxItems() {
         return cacheMaxItems;
+    }
+
+    /** 是否启用「缓存过期」；关闭时完全不读时间上限。 */
+    public static boolean cacheExpireEnabled() {
+        return cacheExpireEnabled;
+    }
+
+    /** 批次保留时长（秒）；0 = 永不过期。 */
+    public static int cacheExpireSeconds() {
+        return cacheExpireSeconds;
     }
 
     public static boolean protectNotifyEnabled() {
@@ -211,6 +225,13 @@ public final class DropCleanerConfig {
                 "# 注意：一次清理最少产生 dropThreshold 堆，所以这个值应该 >= 批次数 × 阈值",
                 "# 默认 3200 = 50 批 × 64 堆，两个上限刚好对齐",
                 "cacheMaxItems = 3200",
+                "",
+                "# 是否让缓存过期（关掉就只受上面两个数量上限约束）",
+                "cacheExpireEnabled = false",
+                "",
+                "# 批次保留多少秒后自动删除；0 = 永不过期",
+                "# 默认 604800 = 7 天。只有 cacheExpireEnabled = true 时才生效",
+                "cacheExpireSeconds = 604800",
                 "",
                 "# 保护区堆积时是否通知管理员",
                 "protectNotifyEnabled = true",

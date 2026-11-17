@@ -130,6 +130,9 @@ Drop Cleaner 指令说明（Fabric / 1.21.1）
   mergeMaxStackSize              相同物品合并上限，默认 64
   cacheMaxBatches                最多保留多少批次，默认 50
   cacheMaxItems                  最多保留多少堆（所有批次合计），默认 3200
+  cacheExpireEnabled             是否按时间清理旧批次，默认 false（关）
+  cacheExpireSeconds             批次保留秒数，默认 604800（7 天）；0 = 永不过期
+                                 注意：只有 cacheExpireEnabled = true 时才读这一项
   protectNotifyEnabled           保护区堆积是否通知管理员，默认 true
   protectNotifyText              通知文案（%s = 保护区名，%s = 数量）
   protectNotifyCooldownSeconds   同一保护区两次通知的最小间隔，默认 600

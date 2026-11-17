@@ -84,6 +84,18 @@ public final class DropCleanerManager {
         int threshold = DropCleanerConfig.dropThreshold();
         DropCleanerData data = DropCleanerData.get(server);
 
+        // 缓存过期：只在开关打开、且时间上限非 0 时生效
+        if (DropCleanerConfig.cacheExpireEnabled()) {
+            int seconds = DropCleanerConfig.cacheExpireSeconds();
+            if (seconds > 0) {
+                long cutoff = System.currentTimeMillis() - seconds * 1000L;
+                int removed = data.expireBefore(cutoff);
+                if (removed > 0) {
+                    DropCleanerMod.LOGGER.info("缓存过期：删除了 {} 个超过 {} 秒的批次", removed, seconds);
+                }
+            }
+        }
+
         for (ServerWorld level : server.getWorlds()) {
             String dimension = level.getRegistryKey().getValue().toString();
             Map<Long, Integer> counts = new HashMap<>();
