@@ -75,6 +75,8 @@ item whitelist  >  protected zone  >  clear radius  >  threshold
 | `mergeMaxStackSize` | 64 | Merge cap for identical items |
 | `cacheMaxBatches` | 50 | Keep at most this many batches |
 | `cacheMaxItems` | 3200 | Keep at most this many stacks (0 = unlimited) |
+| `cacheExpireEnabled` | false | Delete old batches by age (the field below is only read when this is on) |
+| `cacheExpireSeconds` | 604800 | Batch age limit in seconds; 0 = never expire |
 | `protectNotifyEnabled` | true | Tell operators when a zone piles up |
 | `protectNotifyText` | … | Message template, `%s` = zone name, count |
 | `protectNotifyCooldownSeconds` | 600 | Minimum gap between notices per zone |
@@ -137,6 +139,8 @@ MIT
 ## 配置
 
 `config/dropcleaner-server.toml`，首次启动自动生成，带中文注释。改完需重启。
+
+缓存除了数量上限（批次数 / 堆数），还可以按时间过期：`cacheExpireEnabled` 默认关闭，打开后才读 `cacheExpireSeconds`（默认 7 天，0 = 永不过期）。
 
 ## 需求
 
