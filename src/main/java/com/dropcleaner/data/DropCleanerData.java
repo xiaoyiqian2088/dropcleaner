@@ -130,8 +130,11 @@ public class DropCleanerData extends PersistentState {
     /** 同时执行「最多多少批次」和「最多多少堆」，都是先丢最旧的。 */
     public void trim() {
         int maxBatches = DropCleanerConfig.cacheMaxBatches();
-        while (batches.size() > maxBatches) {
-            batches.remove(0);
+        // 0 = 不按批次数限制（堆数上限仍然生效）
+        if (maxBatches > 0) {
+            while (batches.size() > maxBatches) {
+                batches.remove(0);
+            }
         }
 
         int maxItems = DropCleanerConfig.cacheMaxItems();

@@ -1,10 +1,15 @@
 package com.dropcleaner.data;
 
+import net.minecraft.component.ComponentMap;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 一次清理：什么时候清的、大概在哪、清到了什么。
@@ -37,39 +42,45 @@ public record CleanBatch(long id, long createdAt, String dimension, BlockPos cen
      * 「64 个剑」这种原版根本不存在的栈，显示和后续处理都会出问题。</p>
      */
     public static List<ItemStack> merge(List<ItemStack> input, int cap) {
-        List<ItemStack> merged = new ArrayList<>();
         int configured = Math.max(1, cap);
+
+        // 先按「物品 + 全部数据组件」哈希分组（O(n)），再按各自堆叠上限切堆。
+        // 以前的写法是每来一堆就跟已合并列表从头比一遍（O(n²)），上万堆时会卡服。
+        // LinkedHashMap 是为了让输出顺序稳定：同一种物品排在一起。
+        Map<StackKey, Long> totals = new LinkedHashMap<>();
+        Map<StackKey, ItemStack> templates = new HashMap<>();
 
         for (ItemStack stack : input) {
             if (stack.isEmpty()) {
                 continue;
             }
-            int limit = Math.min(configured, Math.max(1, stack.getMaxCount()));
-            int remaining = stack.getCount();
+            StackKey key = new StackKey(stack.getItem(), stack.getComponents());
+            totals.merge(key, (long) stack.getCount(), Long::sum);
+            templates.putIfAbsent(key, stack.copyWithCount(1));
+        }
 
-            for (ItemStack existing : merged) {
-                if (remaining <= 0) {
-                    break;
-                }
-                if (!ItemStack.areItemsAndComponentsEqual(existing, stack)) {
-                    continue;
-                }
-                int space = limit - existing.getCount();
-                if (space <= 0) {
-                    continue;
-                }
-                int moved = Math.min(space, remaining);
-                existing.increment(moved);
-                remaining -= moved;
-            }
+        List<ItemStack> merged = new ArrayList<>(totals.size());
+        for (Map.Entry<StackKey, Long> entry : totals.entrySet()) {
+            ItemStack template = templates.get(entry.getKey());
+            long remaining = entry.getValue();
+            int limit = Math.min(configured, Math.max(1, template.getMaxCount()));
 
             while (remaining > 0) {
-                int chunk = Math.min(limit, remaining);
-                merged.add(stack.copyWithCount(chunk));
+                int chunk = (int) Math.min(limit, remaining);
+                merged.add(template.copyWithCount(chunk));
                 remaining -= chunk;
             }
         }
         return merged;
+    }
+
+    /**
+     * 合并用的 key：物品 + 所有数据组件。
+     *
+     * <p>{@code ComponentMapImpl} 实现了 equals/hashCode，所以附魔、耐久、自定义名不同的物品
+     * 会落到不同的 key，不会被错误合并。</p>
+     */
+    private record StackKey(Item item, ComponentMap components) {
     }
 
     public int itemCount() {

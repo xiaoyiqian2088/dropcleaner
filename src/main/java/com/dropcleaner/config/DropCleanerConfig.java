@@ -69,7 +69,7 @@ public final class DropCleanerConfig {
         clearRadiusChunks = intOf(values, "clearRadiusChunks", clearRadiusChunks, 0, 8);
         notifyRadiusChunks = intOf(values, "notifyRadiusChunks", notifyRadiusChunks, 0, 64);
         mergeMaxStackSize = intOf(values, "mergeMaxStackSize", mergeMaxStackSize, 1, 1_000_000);
-        cacheMaxBatches = intOf(values, "cacheMaxBatches", cacheMaxBatches, 1, 10_000);
+        cacheMaxBatches = intOf(values, "cacheMaxBatches", cacheMaxBatches, 0, 10_000);
         cacheMaxItems = intOf(values, "cacheMaxItems", cacheMaxItems, 0, 1_000_000);
         cacheExpireEnabled = boolOf(values, "cacheExpireEnabled", cacheExpireEnabled);
         cacheExpireSeconds = intOf(values, "cacheExpireSeconds", cacheExpireSeconds, 0, 315_360_000);
